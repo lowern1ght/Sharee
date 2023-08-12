@@ -15,6 +15,9 @@ public record Unit : IBase
     [StringLength(100, MinimumLength = 3, ErrorMessage = $"{nameof(Code)} cannot be shorter than 3 characters")]
     public String? Code { get; set; }
     
+    [Required]
+    public Guid Token { get; set; }
+    
     [Display(Description = "Last upload data files date")]
     public DateTime? LastUpdateTime { get; set; }
 

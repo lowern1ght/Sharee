@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sharee.Application.Authorization;
 using Sharee.Application.Data;
 using Sharee.Application.Data.Entities;
 using Sharee.Application.Interfaces;
@@ -28,8 +29,9 @@ public class SharingController : Controller
     }
     
     [HttpPost]
+    [AuthorizationToken]
     [ActionName("upload")]
-    public async Task<IActionResult> UploadAsync([FromQuery] Int32? id, [FromQuery] String? code, IFormFile file)
+    public async Task<IActionResult> UploadAsync([FromQuery] Int32? id, [FromQuery] String? code, Guid? token, IFormFile file)
     {
         if (await GetEntityFromQueryAsync(id, code) is not Unit unit)
         {
@@ -57,8 +59,9 @@ public class SharingController : Controller
     }
 
     [HttpGet]
+    [AuthorizationToken]
     [ActionName("download")]
-    public async Task<IActionResult> DownloadAsync([FromQuery] Int32? id, [FromQuery] String? code)
+    public async Task<IActionResult> DownloadAsync([FromQuery] Int32? id, [FromQuery] String? code, Guid? token)
     {
         if (await GetEntityFromQueryAsync(id, code) is not Unit unit)
         {
