@@ -1,6 +1,6 @@
 using System.Globalization;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using Sharee.Application.Data.Entities;
 
 namespace Sharee.Application.Data;
@@ -11,21 +11,18 @@ public class ShareeDbContext : DbContext
 
     private static class ShareeContextConnection
     {
-        public static readonly String DefaultConnectionString 
-            = new NpgsqlConnectionStringBuilder
+        public static readonly String DefaultConnectionString
+            = new SqliteConnectionStringBuilder
             {
-                Host = "localhost", 
-                Port = NpgsqlConnection.DefaultPort, 
-                Database = "sharee", 
-                Username = "sharee_admin", 
-                Password = "20Zl$a_zOzlZl102"
+                DataSource = "sharee.db",
+                Mode = SqliteOpenMode.ReadWriteCreate
             }.ConnectionString;
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSnakeCaseNamingConvention(CultureInfo.InvariantCulture)
-            .UseNpgsql(_connectionString ?? ShareeContextConnection.DefaultConnectionString);
+            .UseSqlite(_connectionString ?? ShareeContextConnection.DefaultConnectionString);
     }
 
     public ShareeDbContext(String? connectionString = null)

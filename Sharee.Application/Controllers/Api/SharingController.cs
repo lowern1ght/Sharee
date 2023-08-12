@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Sharee.Application.Data;
 using Sharee.Application.Data.Entities;
 using Sharee.Application.Interfaces;
+using Sharee.Application.Services;
 
 namespace Sharee.Application.Controllers.Api;
 
@@ -12,18 +13,23 @@ public class SharingController : Controller
 {
     private readonly ShareeDbContext _context;
     private readonly ILogger<SharingController> _logger;
+    private readonly SharingServiceOption _serviceOption;
     private readonly ISharingService<Unit> _sharingService;
 
-    public SharingController(ShareeDbContext context, ILogger<SharingController> logger, ISharingService<Unit> sharingService)
+    private const String ContentFileType = "application/octet-stream";
+
+    public SharingController(ShareeDbContext context, ILogger<SharingController> logger, 
+        ISharingService<Unit> sharingService, SharingServiceOption serviceOption)
     {
         _logger = logger;
-        _sharingService = sharingService;
         _context = context;
+        _sharingService = sharingService;
+        _serviceOption = serviceOption;
     }
     
     [HttpPost]
     [ActionName("upload")]
-    public async Task<IActionResult> UploadAsync([FromQuery] Int32? id, [FromQuery] String? code)
+    public async Task<IActionResult> UploadAsync([FromQuery] Int32? id, [FromQuery] String? code, IFormFile file)
     {
         if (await GetEntityFromQueryAsync(id, code) is not Unit unit)
         {
@@ -31,24 +37,22 @@ public class SharingController : Controller
             return NotFound();
         }
 
-        if (!(Request.Form.Files.Count >= 1))
-        {
-            _logger.Log(LogLevel.Error, "{Count} error", Request.Form.Files.Count);
-            return Problem("Count files error");
-        }
+        await _sharingService.UploadFileAsync(file, unit, GetFileExtension(file.FileName));
 
-        var file = Request.Form.Files[0];
+        unit.LastUpdateTime = DateTime.Now;
+
+        _context.Units.Update(unit);
 
         try
         {
-            await _sharingService.UploadBaseAsync(file, unit);
+            await _context.SaveChangesAsync();
         }
         catch (Exception exception)
         {
-            _logger.Log(LogLevel.Error, exception.Message, exception.Data);
-            return Problem(exception.Message);
+            _logger.Log(LogLevel.Error, exception.Message);
+            return Problem();
         }
-
+        
         return Ok();
     }
 
@@ -62,19 +66,36 @@ public class SharingController : Controller
             return NotFound();
         }
 
+        var pathToFile = await _sharingService.GetDownloadFileAsync(unit);
+
+        if (pathToFile is null)
+        {
+            return NotFound();
+        }
+        
+        unit.LastDownloadTime = DateTime.Now;
+
+        _context.Units.Update(unit);
+
         try
         {
-            await _sharingService.DownloadBaseAsync(HttpContext, unit);
+            await _context.SaveChangesAsync();
         }
         catch (Exception exception)
         {
-            _logger.Log(LogLevel.Error, exception.Message, exception.Data);
-            return Problem(exception.Message);
+            _logger.Log(LogLevel.Error, exception.Message);
+            return Problem();
         }
-
-        return Ok();
+        
+        return File(System.IO.File.OpenRead(pathToFile), ContentFileType, Path.GetFileName(pathToFile));
     }
 
+    private String GetFileExtension(String fileName)
+    {
+        var indexDot = fileName.LastIndexOf('.');
+        return fileName.Substring(indexDot);
+    }
+    
     private async Task<IBase?> GetEntityFromQueryAsync(Int32? id, String? code)
     {
         if (!id.HasValue && code is null)

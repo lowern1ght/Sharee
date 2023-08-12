@@ -11,23 +11,31 @@ public class SharingService : ISharingService<Unit>
     {
         _serviceOption = serviceOption;
     }
-    
-    public async Task UploadBaseAsync(IFormFile file, Unit @base)
+
+    public async Task UploadFileAsync(IFormFile file, Unit unit, String fileExtension)
     {
-        var path = GetPathToBaseFile(@base, _serviceOption.UploadPrefix);
-        await using var fileStream = File.Create(path);
-        await file.CopyToAsync(fileStream);
+        var path = GetPathToBaseFile(unit, _serviceOption.UploadPrefix, fileExtension);
+        await file.CopyToAsync(File.OpenWrite(path));
     }
 
-    public Task DownloadBaseAsync(HttpContext context, Unit @base)
+    public async Task<String?> GetDownloadFileAsync(Unit unit)
     {
-        var path = GetPathToBaseFile(@base, _serviceOption.DownloadPrefix);
-        return context.Response.SendFileAsync(path);
+        var fileName = unit.Code + _serviceOption.DownloadPrefix;
+        
+        foreach (var file in Directory.GetFiles(_serviceOption.PathToSharingFolder))
+        {
+            if (file.Contains(fileName))
+            {
+                return file;
+            }
+        }
+
+        return null;
     }
 
-    private String GetPathToBaseFile(IBase @base, String prefix)
+    private String GetPathToBaseFile(IBase @base, String prefix, String? extension = null)
     {
         var fileName = @base.Code + prefix;
-        return Path.Combine(_serviceOption.PathToSharingFolder, fileName);
+        return Path.Combine(_serviceOption.PathToSharingFolder, fileName + extension);
     }
 }
