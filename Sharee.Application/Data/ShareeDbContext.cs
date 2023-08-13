@@ -1,7 +1,6 @@
 using System.Globalization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Sharee.Application.Data.Entities;
 
 namespace Sharee.Application.Data;
@@ -25,14 +24,7 @@ public class ShareeDbContext : DbContext
         optionsBuilder.UseSnakeCaseNamingConvention(CultureInfo.InvariantCulture)
             .UseSqlite(_connectionString ?? ShareeContextConnection.DefaultConnectionString);
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Unit>()
-            .Property(unit => unit.Token)
-            .IsRequired(true);
-    }
-
+    
     public ShareeDbContext(String? connectionString = null)
     {
         _connectionString = connectionString;

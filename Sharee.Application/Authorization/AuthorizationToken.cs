@@ -9,6 +9,7 @@ public class AuthorizationToken : ActionFilterAttribute, IAuthorizationFilter
 {
     private static readonly IActionResult DefaultResult = new ContentResult()
     {
+        Content = "token query param null or uncorrected",
         StatusCode = StatusCodes.Status401Unauthorized
     };
 
@@ -16,7 +17,9 @@ public class AuthorizationToken : ActionFilterAttribute, IAuthorizationFilter
     {
         var dbContext = context.HttpContext.RequestServices.GetRequiredService<ShareeDbContext>();
 
-        if (!Guid.TryParse(context.HttpContext.Request.Query["token"], CultureInfo.InvariantCulture, out var guid) && 
+        var token = context.HttpContext.Request.Query["token"];
+        
+        if (!Guid.TryParse(token, CultureInfo.InvariantCulture, out var guid) &&
             dbContext.Units.Any(unit => unit.Token.Equals(guid)))
         {
             context.Result = DefaultResult;

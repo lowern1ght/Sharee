@@ -14,7 +14,6 @@ public class SharingController : Controller
 {
     private readonly ShareeDbContext _context;
     private readonly ILogger<SharingController> _logger;
-    private readonly SharingServiceOption _serviceOption;
     private readonly ISharingService<Unit> _sharingService;
 
     private const String ContentFileType = "application/octet-stream";
@@ -25,7 +24,6 @@ public class SharingController : Controller
         _logger = logger;
         _context = context;
         _sharingService = sharingService;
-        _serviceOption = serviceOption;
     }
     
     [HttpPost]
