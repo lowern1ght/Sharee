@@ -12,6 +12,7 @@ It is a web application for file sharing between configured databases.
 - Swagger is configured in the application for a quick inspection of the possibilities
 - There is no binding to the type of data to be exchanged on the server
 - Setting up a working folder, regardless of static files
+- Use only with https
 
 ## Technologies
 
