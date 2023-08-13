@@ -44,6 +44,8 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
 });
 
+builder.Services.AddResponseCompression();
+
 builder.Services.AddRouting(options => 
     options.LowercaseUrls = true);
 
@@ -69,6 +71,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
+
+app.UseResponseCompression();
 
 app.UseHttpsRedirection();
 
