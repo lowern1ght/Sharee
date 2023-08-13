@@ -15,15 +15,17 @@ public class SharingController : Controller
     private readonly ShareeDbContext _context;
     private readonly ILogger<SharingController> _logger;
     private readonly ISharingService<Unit> _sharingService;
+    private readonly AuthorizationSession _authorizationSession;
 
     private const String ContentFileType = "application/octet-stream";
 
     public SharingController(ShareeDbContext context, ILogger<SharingController> logger, 
-        ISharingService<Unit> sharingService, SharingServiceOption serviceOption)
+        ISharingService<Unit> sharingService, AuthorizationSession authorizationSession)
     {
         _logger = logger;
         _context = context;
         _sharingService = sharingService;
+        _authorizationSession = authorizationSession;
     }
     
     [HttpPost]
@@ -89,6 +91,18 @@ public class SharingController : Controller
         }
         
         return File(System.IO.File.OpenRead(pathToFile), ContentFileType, Path.GetFileName(pathToFile));
+    }
+
+    [HttpGet]
+    [ActionName("authorization")]
+    public async Task<ActionResult> AuthorizationAsync([FromQuery] Guid token)
+    {
+        if (_authorizationSession.CanAuthorization(token, HttpContext.Session))
+        {
+            return Ok();
+        }
+
+        return Unauthorized();
     }
 
     private String GetFileExtension(String fileName)

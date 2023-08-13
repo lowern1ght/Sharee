@@ -18,9 +18,9 @@ public record Unit : IBase
     [Required]
     public Guid Token { get; set; }
     
-    [Display(Description = "Last upload data files date")]
+    [Display(Name = "Last update", Description = "Last upload data files date")]
     public DateTime? LastUpdateTime { get; set; }
 
-    [Display(Description = "Last download data files date")]
+    [Display(Name = "Last download", Description = "Last download data files date")]
     public DateTime? LastDownloadTime { get; set; }
 }

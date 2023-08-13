@@ -1,0 +1,25 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>@ViewData["Title"]</title>
+    <link type="image/png" sizes="32x32" rel="icon" href="~/favicon.png">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" >
+    @await RenderSectionAsync("Styles", false)
+</head>
+<body>
+
+<div class="container-fluid">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4 font-monospace text-header">Sharee</span>
+        </a>
+    </header>
+    @RenderBody()
+</div>
+
+@await RenderSectionAsync("Scripts", false)
+
+</body>
+</html>

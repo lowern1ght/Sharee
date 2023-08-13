@@ -22,6 +22,28 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddSwaggerGen();
 }
 
+builder.Services.AddSingleton(new AuthorizationSession(
+        builder.Configuration.GetValue<Guid>("AdminToken")));
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".ss";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = ".afz";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
+});
+
 builder.Services.AddRouting(options => 
     options.LowercaseUrls = true);
 
@@ -49,6 +71,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSession();
 
 app.UseStaticFiles();
 
