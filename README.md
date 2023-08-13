@@ -34,15 +34,17 @@ The Share project is developed using the following technologies:
 
 3. Configure the database connection in the: `appsettings.json`.
 
-4. Perform database migrations using the command: 
+4. Configure an administrator token to log in to the admin panel **AdminToken** in the `appsettings.json`;
+
+5. Perform database migrations using the command: 
 
     `dotnet ef database update`
 
-5. Run the project by running the command:
+6. Run the project by running the command:
 
     `dotnet run`
 
-6. You can use curl or the sharee client [sharee-client](https://github.com/lowern1ght/sharee-client)
+7. You can use **curl** or the sharee client [sharee-client](https://github.com/lowern1ght/sharee-client)
 
 ## Contribution to the project
 
@@ -52,5 +54,5 @@ We are always happy to welcome new participants and are ready to consider your s
 
 ## License
 
-The Share project is distributed under the MIT license. Detailed information about the 
+The Share project is distributed under the MIT license. Detailed information about the
 license can be found in the `LICENSE` file.
