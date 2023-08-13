@@ -42,6 +42,8 @@ The Share project is developed using the following technologies:
 
     `dotnet run`
 
+6. You can use curl or the sharee client [sharee-client](https://github.com/lowern1ght/sharee-client)
+
 ## Contribution to the project
 
 If you are interested in developing the Sharee project, you can contribute by creating new features, fixing bugs, or improving existing code. Just make a fork of the repository, make the necessary changes and send a pull request.
